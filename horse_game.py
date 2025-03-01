@@ -34,10 +34,12 @@ def horse_game(SCREEN):
         running = True
         clicked = False  # Track click state
         background = pygame.image.load("horsemenu.png")
+        background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
         while running:
-            screen.blit(background, (0, 0))  # Draw background
             SCREEN.fill(BLACK)
+            screen.blit(background, (0, 0))  # Draw background
+            
 
             # Display money
             text = font.render(f"Money: ${game_data.money}", True, WHITE)
