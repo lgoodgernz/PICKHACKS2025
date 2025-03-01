@@ -1,19 +1,14 @@
 import tkinter as tk
 import subprocess
-import sys
-import os
 
-# Function to run a game, close the menu, and reopen it after the game closes
+# Function to run a game and reopen the menu after it closes
 def run_game_and_reopen_menu(game_script):
-    root.quit()  # Close the main menu
-    game_process = subprocess.Popen(["python", game_script])  # Run the game script
-    game_process.wait()  # Wait for the game process to close
-    reopen_menu()  # Reopen the menu after the game closes
+    root.withdraw()  # Hide the menu window
+    game_process = subprocess.Popen(["python", game_script])  # Run the game
+    game_process.wait()  # Wait for the game to close
+    root.deiconify()  # Show the menu again
 
-def reopen_menu():
-    subprocess.Popen([sys.executable, "main.py"])  # Reopen the menu
-
-# Functions for each game
+# Game functions
 def horse_game():
     run_game_and_reopen_menu("horse_game.py")
 
@@ -29,43 +24,43 @@ def clicker():
 def exit_game():
     root.quit()  # Close the menu
 
-# Create the main window
+# Create the main window (Resizable)
 root = tk.Tk()
 root.title("Game Menu")
-root.geometry("1000x600")  # Set window size
+root.geometry("700x600")  # Initial window size
+root.minsize(500, 400)  # Prevent making it too small
 
-# Load the casino background image using Tkinter's built-in PhotoImage
-bg_photo = tk.PhotoImage(file="Casino.png")  # Ensure "Casino.png" exists in the same folder
-
-# Create a label for the background image
+# Load the casino background image
+bg_photo = tk.PhotoImage(file="Casino.png")  # Ensure "Casino.png" is 700x600
 bg_label = tk.Label(root, image=bg_photo)
-bg_label.place(relwidth=1, relheight=1)  # Make it fill the entire window
+bg_label.place(relwidth=1, relheight=1)  # Background scales with window
 
-# Title label for the game
-title_label = tk.Label(root, text="Select a Game", font=("Arial", 18), bg="red", fg="white")
-title_label.pack(pady=20)  # Add spacing
+# **FRAME-BASED DESK1 OVERLAY**
+desk_frame = tk.Frame(root, width=200, height=120, bg="red")  # Set a temporary color to see its position
+desk_frame.place(relx=0.5, rely=0.75, anchor="center")  # Adjust this to line it up
 
-# Button properties
-button_font = ("Arial", 14)
+# Load Desk1.png as the button image
+desk_photo = tk.PhotoImage(file="Desk1.png")  # Ensure "Desk1.png" exists
+
+# Add Desk1 image inside the frame (button overlay)
+desk_button = tk.Button(desk_frame, image=desk_photo, command=clicker, borderwidth=0, highlightthickness=0)
+desk_button.pack(expand=True, fill="both")  # Expands within frame
+
+# Text buttons (Fixed size but reposition dynamically)
+button_font = ("Arial", 12)
 button_fg_color = "white"
 button_bg_color = "black"
 
-# Create buttons
 horse_button = tk.Button(root, text="Horse Game", command=horse_game, font=button_font, fg=button_fg_color, bg=button_bg_color)
 spinner_button = tk.Button(root, text="Spinner Game", command=spinner_game, font=button_font, fg=button_fg_color, bg=button_bg_color)
 blackjack_button = tk.Button(root, text="BlackJack", command=blackjack, font=button_font, fg=button_fg_color, bg=button_bg_color)
-clicker_button = tk.Button(root, text="Clicker", command=clicker, font=button_font, fg=button_fg_color, bg=button_bg_color)
 exit_button = tk.Button(root, text="Exit", command=exit_game, font=button_font, fg=button_fg_color, bg=button_bg_color)
 
-# Position buttons within 1000x600 dimensions
-button_width = 120
-button_height = 40
-
-horse_button.place(x=20, y=20, width=button_width, height=button_height)  # Top-left
-spinner_button.place(x=1000 - button_width - 20, y=20, width=button_width, height=button_height)  # Top-right
-blackjack_button.place(x=20, y=600 - button_height - 20, width=button_width, height=button_height)  # Bottom-left
-clicker_button.place(x=1000 - button_width - 20, y=600 - button_height - 20, width=button_width, height=button_height)  # Bottom-right
-exit_button.place(relx=0.5, rely=0.5, anchor="center", width=button_width, height=button_height)  # Center
+# **Dynamic button placement (relative positions)**
+horse_button.place(relx=0.05, rely=0.05, anchor="nw")  # Top-left
+spinner_button.place(relx=0.95, rely=0.05, anchor="ne")  # Top-right
+blackjack_button.place(relx=0.05, rely=0.95, anchor="sw")  # Bottom-left
+exit_button.place(relx=0.5, rely=0.5, anchor="center")  # Center
 
 # Run the Tkinter event loop
 root.mainloop()
