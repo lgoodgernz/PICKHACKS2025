@@ -4,6 +4,7 @@ from roulette import roulette_game
 from horse_game import horse_game
 from nba import nba_game
 from spinner import spinner_game  # Import the spinner game
+from blackjack import blackjack_game
 
 pygame.init()
 
@@ -110,6 +111,9 @@ def main():
         elif current_game == "spinner":
             spinner_game(SCREEN)
             current_game = None
+        elif current_game == "blackjack":
+            blackjack_game(SCREEN)
+            current_game = None
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -120,7 +124,7 @@ def main():
                 elif desk2_rect.collidepoint(event.pos):
                     current_game = "nba"
                 elif desk3_rect.collidepoint(event.pos):
-                    current_game = "clicker"
+                    current_game = "blackjack"
                 elif desk4_rect.collidepoint(event.pos):
                     current_game = "horse_game"
                 elif desk5_rect.collidepoint(event.pos):
