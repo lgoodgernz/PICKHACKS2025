@@ -1,10 +1,9 @@
 import pygame
 from clicker import clicker_game
-from roulette import roulette_game
-from horse_game import horse_game
-from nba import nba_game
-from spinner import spinner_game  # Import the spinner game
-from blackjack import blackjack_game
+from roulette import roulette_game  # Import the roulette game
+from horse_game import horse_game  # Import the horse game
+from nba import nba_game # Import the NBA game
+from spinner import spinner_game # Import the Spinner game
 
 pygame.init()
 
@@ -28,12 +27,11 @@ desk2_original = pygame.transform.scale(desk2_img, (237, 122))
 desk2_pressed = pygame.transform.scale(desk2_img, (237, 122))
 desk2_rect = desk2_original.get_rect(topleft=(1001, 199))
 
-# Desk3 button
-# New Desk3 button (Updated position and size)
+# Desk3 button (Updated Position and Dimensions)
 desk3_img = pygame.image.load("Desk3.png")
-desk3_original = pygame.transform.scale(desk3_img, (187, 253))  # Resizing Desk3 to 187x253
-desk3_pressed = pygame.transform.scale(desk3_img, (187, 253))  # Make pressed version the same size
-desk3_rect = desk3_original.get_rect(topleft=(492, 495))  # Desk3 new position at (492, 495)
+desk3_original = pygame.transform.scale(desk3_img, (248, 131))
+desk3_pressed = pygame.transform.scale(desk3_img, (248, 131))
+desk3_rect = desk3_original.get_rect(topleft=(230, 199))
 
 # Desk4 button
 desk4_img = pygame.image.load("Desk4.png")
@@ -77,15 +75,15 @@ clicked = False
 
 def draw_main_menu():
     SCREEN.blit(BACKGROUND, (0, 0))
-    SCREEN.blit(desk_original, desk_rect.topleft)
-    SCREEN.blit(desk2_original, desk2_rect.topleft)
-    SCREEN.blit(desk3_original, desk3_rect.topleft)
-    SCREEN.blit(desk4_original, desk4_rect.topleft)
-    SCREEN.blit(desk5_original, desk5_rect.topleft)
-    SCREEN.blit(horseboard_original, horseboard_rect.topleft)
-    SCREEN.blit(get_money_original, get_money_rect.topleft)
-    SCREEN.blit(help_original, help_rect.topleft)
-    SCREEN.blit(exit_original, exit_rect.topleft)
+    SCREEN.blit(desk_pressed if clicked else desk_original, desk_rect.topleft)
+    SCREEN.blit(desk2_pressed if clicked else desk2_original, desk2_rect.topleft)
+    SCREEN.blit(desk3_pressed if clicked else desk3_original, desk3_rect.topleft)
+    SCREEN.blit(desk4_pressed if clicked else desk4_original, desk4_rect.topleft)
+    SCREEN.blit(desk5_pressed if clicked else desk5_original, desk5_rect.topleft)
+    SCREEN.blit(horseboard_pressed if clicked else horseboard_original, horseboard_rect.topleft)
+    SCREEN.blit(get_money_pressed if clicked else get_money_original, get_money_rect.topleft)
+    SCREEN.blit(help_pressed if clicked else help_original, help_rect.topleft)
+    SCREEN.blit(exit_pressed if clicked else exit_original, exit_rect.topleft)
     pygame.display.update()
 
 def main():
@@ -111,9 +109,6 @@ def main():
         elif current_game == "spinner":
             spinner_game(SCREEN)
             current_game = None
-        elif current_game == "blackjack":
-            blackjack_game(SCREEN)
-            current_game = None
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -124,17 +119,20 @@ def main():
                 elif desk2_rect.collidepoint(event.pos):
                     current_game = "nba"
                 elif desk3_rect.collidepoint(event.pos):
-                    current_game = "blackjack"
+                    current_game = "clicker"
                 elif desk4_rect.collidepoint(event.pos):
                     current_game = "horse_game"
                 elif desk5_rect.collidepoint(event.pos):
-                    print("Desk5 clicked! Opening Spinner Game...")
+                    print("Desk5 clicked!")
                     current_game = "spinner"
                 elif horseboard_rect.collidepoint(event.pos):
+                    print("HorseBoard clicked!")
                     current_game = "horse_game"
                 elif get_money_rect.collidepoint(event.pos):
+                    print("Get_Money button clicked!")
                     current_game = "clicker"
                 elif help_rect.collidepoint(event.pos):
+                    print("Help button clicked!")
                     current_game = "clicker"
                 elif exit_rect.collidepoint(event.pos):
                     print("Exiting the game...")
