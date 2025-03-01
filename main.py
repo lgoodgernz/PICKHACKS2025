@@ -2,6 +2,7 @@ import pygame
 from clicker import clicker_game
 from roulette import roulette_game  # Import the roulette game
 from horse_game import horse_game  # Import the horse game
+from nba import nba_game #import the nba game
 
 pygame.init()
 
@@ -101,6 +102,9 @@ def main():
         elif current_game == "horse_game":
             horse_game(SCREEN)  # Show the horse game
             current_game = None  # Return to the main menu after finishing the game
+        elif current_game == "nba":
+            nba_game(SCREEN)
+            current_game = None
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -109,7 +113,7 @@ def main():
                 if desk_rect.collidepoint(event.pos):  # desk1 click should bring to roulette game
                     current_game = "roulette"  # desk1 now leads to roulette game
                 elif desk2_rect.collidepoint(event.pos):
-                    current_game = "clicker"  # desk2 leads to clicker game
+                    current_game = "nba"  # desk2 leads to clicker game
                 elif desk3_rect.collidepoint(event.pos):  # desk3 click should bring to clicker game
                     current_game = "clicker"  # desk3 now leads to clicker game
                 elif desk4_rect.collidepoint(event.pos):  # desk4 click should bring to horse game
