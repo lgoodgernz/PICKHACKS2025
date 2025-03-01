@@ -2,13 +2,13 @@ import pygame
 import random
 import game_data  # Import shared money variable
 
-def horse_game():
+def horse_game(SCREEN):
     # Initialize pygame
     pygame.init()
     money = game_data.load_money()
 
     # Game Constants
-    WIDTH, HEIGHT = 1000, 600
+    WIDTH, HEIGHT = SCREEN.get_width(), SCREEN.get_height()
     WHITE = (255, 255, 255)
     RED = (255, 0, 0)
     BLACK = (0, 0, 0)
@@ -130,9 +130,9 @@ def horse_game():
 
         game_data.save_money(money)
         pygame.quit()
-
+main_menu()
     # Run the main menu
-    main_menu()
+
 
 # Call the horse_game function to start the game
 
