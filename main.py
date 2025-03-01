@@ -1,12 +1,41 @@
+import pygame
 import tkinter as tk
 import subprocess
 
-# Function to run a game and reopen the menu after it closes
+# Initialize Pygame
+pygame.init()
+
+# Constants
+WIDTH, HEIGHT = 1479, 778  # Casino.png size
+
+# Create Pygame window
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Game Menu")
+
+# Load images
+casino_bg = pygame.image.load("Casino.png")
+desk_img = pygame.image.load("Desk1.png")
+
+# Resize Desk1 image (if needed)
+desk_width = desk_img.get_width() + 25
+desk_height = desk_img.get_height() + 25
+desk_img = pygame.transform.scale(desk_img, (desk_width, desk_height))
+
+# Desk position (Bottom-right table)
+desk_x, desk_y = 1110, 500  # Adjusted for perfect alignment
+
+# Function to run game and reopen menu
 def run_game_and_reopen_menu(game_script):
-    root.withdraw()  # Hide the menu window
-    game_process = subprocess.Popen(["python", game_script])  # Run the game
-    game_process.wait()  # Wait for the game to close
-    root.deiconify()  # Show the menu again
+    root.withdraw()  # Hide Tkinter window
+    game_process = subprocess.Popen(["python", game_script])
+    game_process.wait()  # Wait for game to close
+    root.deiconify()  # Show menu again
+
+# Tkinter setup (for text buttons)
+root = tk.Tk()
+root.title("Game Menu")
+root.geometry("200x200")  # Keep small, Pygame handles visuals
+root.withdraw()  # Hide Tkinter window (since Pygame is main)
 
 # Game functions
 def horse_game():
@@ -22,45 +51,25 @@ def clicker():
     run_game_and_reopen_menu("clicker.py")
 
 def exit_game():
-    root.quit()  # Close the menu
+    pygame.quit()
+    root.quit()
 
-# Create the main window (Resizable)
-root = tk.Tk()
-root.title("Game Menu")
-root.geometry("700x600")  # Initial window size
-root.minsize(500, 400)  # Prevent making it too small
+# Main loop (Pygame handles images and Desk1 click detection)
+running = True
+while running:
+    screen.blit(casino_bg, (0, 0))  # Draw background
+    screen.blit(desk_img, (desk_x, desk_y))  # Draw Desk1 image
 
-# Load the casino background image
-bg_photo = tk.PhotoImage(file="Casino.png")  # Ensure "Casino.png" is 700x600
-bg_label = tk.Label(root, image=bg_photo)
-bg_label.place(relwidth=1, relheight=1)  # Background scales with window
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-# **FRAME-BASED DESK1 OVERLAY**
-desk_frame = tk.Frame(root, width=200, height=120, bg="red")  # Set a temporary color to see its position
-desk_frame.place(relx=0.5, rely=0.75, anchor="center")  # Adjust this to line it up
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mx, my = pygame.mouse.get_pos()
+            if desk_x <= mx <= desk_x + desk_width and desk_y <= my <= desk_y + desk_height:
+                clicker()  # Open clicker.py
 
-# Load Desk1.png as the button image
-desk_photo = tk.PhotoImage(file="Desk1.png")  # Ensure "Desk1.png" exists
+    pygame.display.update()
 
-# Add Desk1 image inside the frame (button overlay)
-desk_button = tk.Button(desk_frame, image=desk_photo, command=clicker, borderwidth=0, highlightthickness=0)
-desk_button.pack(expand=True, fill="both")  # Expands within frame
-
-# Text buttons (Fixed size but reposition dynamically)
-button_font = ("Arial", 12)
-button_fg_color = "white"
-button_bg_color = "black"
-
-horse_button = tk.Button(root, text="Horse Game", command=horse_game, font=button_font, fg=button_fg_color, bg=button_bg_color)
-spinner_button = tk.Button(root, text="Spinner Game", command=spinner_game, font=button_font, fg=button_fg_color, bg=button_bg_color)
-blackjack_button = tk.Button(root, text="BlackJack", command=blackjack, font=button_font, fg=button_fg_color, bg=button_bg_color)
-exit_button = tk.Button(root, text="Exit", command=exit_game, font=button_font, fg=button_fg_color, bg=button_bg_color)
-
-# **Dynamic button placement (relative positions)**
-horse_button.place(relx=0.05, rely=0.05, anchor="nw")  # Top-left
-spinner_button.place(relx=0.95, rely=0.05, anchor="ne")  # Top-right
-blackjack_button.place(relx=0.05, rely=0.95, anchor="sw")  # Bottom-left
-exit_button.place(relx=0.5, rely=0.5, anchor="center")  # Center
-
-# Run the Tkinter event loop
-root.mainloop()
+pygame.quit()
+root.quit()
