@@ -127,8 +127,7 @@ def horse_game(SCREEN):
                         return
 
             pygame.display.flip()
-
-        game_data.save_money(money)
+            game_data.save_money(money)
 return
     # Run the main menu
 
