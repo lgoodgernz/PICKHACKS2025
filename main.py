@@ -1,7 +1,7 @@
 import pygame
-import game_data
 from clicker import clicker_game
 from roulette import roulette_game  # Import the roulette game
+from horse_game import horse_game  # Import the horse game
 
 pygame.init()
 
@@ -31,6 +31,12 @@ desk3_original = pygame.transform.scale(desk3_img, (251, 124))  # Resizing Desk3
 desk3_pressed = pygame.transform.scale(desk3_img, (251, 124))  # Make pressed version the same size
 desk3_rect = desk3_original.get_rect(topleft=(232, 199))  # Desk3 position at (232, 199)
 
+# New Desk4 button
+desk4_img = pygame.image.load("Desk4.png")
+desk4_original = pygame.transform.scale(desk4_img, (241, 151))  # Resizing Desk4 to 241x151
+desk4_pressed = pygame.transform.scale(desk4_img, (241, 151))  # Make pressed version the same size
+desk4_rect = desk4_original.get_rect(topleft=(117, 502))  # Desk4 position at (117, 502)
+
 # New Exit button
 exit_img = pygame.image.load("Exit.png")
 exit_original = pygame.transform.scale(exit_img, (90, 32))  # Resizing Exit button to 90x32
@@ -46,6 +52,7 @@ def draw_main_menu():
     SCREEN.blit(desk_pressed if clicked else desk_original, desk_rect.topleft)
     SCREEN.blit(desk2_pressed if clicked else desk2_original, desk2_rect.topleft)  # Draw Desk2
     SCREEN.blit(desk3_pressed if clicked else desk3_original, desk3_rect.topleft)  # Draw Desk3
+    SCREEN.blit(desk4_pressed if clicked else desk4_original, desk4_rect.topleft)  # Draw Desk4
     SCREEN.blit(exit_pressed if clicked else exit_original, exit_rect.topleft)  # Draw Exit button
     pygame.display.update()
 
@@ -63,6 +70,9 @@ def main():
         elif current_game == "roulette":
             roulette_game(SCREEN)  # Show the roulette game
             current_game = None  # Return to the main menu after finishing the game
+        elif current_game == "horse_game":
+            horse_game(SCREEN)  # Show the horse game
+            current_game = None  # Return to the main menu after finishing the game
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -72,8 +82,10 @@ def main():
                     current_game = "roulette"  # desk1 now leads to roulette game
                 elif desk2_rect.collidepoint(event.pos):
                     current_game = "clicker"  # desk2 leads to clicker game
-                elif desk3_rect.collidepoint(event.pos):
-                    current_game = "clicker"  # desk3 leads to clicker game
+                elif desk3_rect.collidepoint(event.pos):  # desk3 click should bring to horse game
+                    current_game = "horse_game"  # desk3 leads to horse game
+                elif desk4_rect.collidepoint(event.pos):  # desk4 click should bring to clicker game or a new game
+                    current_game = "clicker"  # Change to desired game for desk4
                 elif exit_rect.collidepoint(event.pos):  # Check if Exit button is clicked
                     print("Exiting the game...")  # Test message for Exit
                     running = False  # Exit the game loop
