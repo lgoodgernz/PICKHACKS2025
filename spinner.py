@@ -33,7 +33,13 @@ labels = ["1", "2", "3", "4", "5", "6"]
 def draw_spinner(angle):
     screen.fill(WHITE)
     pygame.draw.circle(screen, BLACK, center, radius, 3)
-   
+
+     title_font = pygame.font.Font(None, 50)  
+    title_text = title_font.render("Spinner Game", True, BLACK) 
+    screen.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, 20)) 
+    
+    pygame.display.flip()
+    
     for i in range(6):
         section_angle = math.radians(i * 60)
         x = center[0] + radius * math.cos(section_angle)
