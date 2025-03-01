@@ -2,7 +2,6 @@ import pygame
 import random
 import math
 
-
 pygame.init()
 
 
@@ -22,7 +21,7 @@ font = pygame.font.Font(None, 36)
 
 
 center = (WIDTH // 2, HEIGHT // 2)
-radius = 200
+radius = 150  
 angle = 0
 spinning = False
 spin_speed = 0
@@ -30,15 +29,18 @@ spin_speed = 0
 
 labels = ["1", "2", "3", "4", "5", "6"]
 
-def draw_spinner(angle):
-    screen.fill(WHITE)
-    pygame.draw.circle(screen, BLACK, center, radius, 3)
+clock = pygame.time.Clock()
 
-     title_font = pygame.font.Font(None, 50)  
-    title_text = title_font.render("Spinner Game", True, BLACK) 
-    screen.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, 20)) 
+def draw_spinner(angle):
+    screen.fill(WHITE)  
     
-    pygame.display.flip()
+   
+    title_font = pygame.font.Font(None, 50)
+    title_text = title_font.render("Spinner Game", True, BLACK)
+    screen.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, 20))
+    
+    pygame.draw.circle(screen, BLACK, center, radius, 3)
+    
     
     for i in range(6):
         section_angle = math.radians(i * 60)
@@ -46,19 +48,18 @@ def draw_spinner(angle):
         y = center[1] + radius * math.sin(section_angle)
         pygame.draw.line(screen, BLACK, center, (x, y), 2)
         
-      
-        pygame.draw.polygon(screen, COLORS[i], [center, (x, y), (center[0] + radius * math.cos(math.radians((i+1) * 60)),
-                                                              center[1] + radius * math.sin(math.radians((i+1) * 60)))])
         
-       
-        text_x = center[0] + (radius // 1.5) * math.cos(math.radians(i * 60 + 30))
-        text_y = center[1] + (radius // 1.5) * math.sin(math.radians(i * 60 + 30))
+        pygame.draw.polygon(screen, COLORS[i], [center, (x, y), (center[0] + radius * math.cos(math.radians((i+1) * 60)),
+        center[1] + radius * math.sin(math.radians((i+1) * 60)))])
+        
+     
+        text_x = center[0] + (radius // 2) * math.cos(math.radians(i * 60 + 30))
+        text_y = center[1] + (radius // 2) * math.sin(math.radians(i * 60 + 30))
         text_surface = font.render(labels[i], True, BLACK)
         screen.blit(text_surface, (text_x - 10, text_y - 10))
-    
-  
-    arrow_x = center[0] + (radius - 30) * math.cos(math.radians(angle))
-    arrow_y = center[1] + (radius - 30) * math.sin(math.radians(angle))
+
+    arrow_x = center[0] + (radius - 20) * math.cos(math.radians(angle))
+    arrow_y = center[1] + (radius - 20) * math.sin(math.radians(angle))
     pygame.draw.line(screen, RED, center, (arrow_x, arrow_y), 5)
     pygame.display.flip()
 
@@ -70,16 +71,16 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN and not spinning:
             spinning = True
-            spin_speed = random.randint(50, 100)
+            spin_speed = random.randint(20, 50)  
     
     if spinning:
         angle += spin_speed
-        spin_speed = max(0, spin_speed - 1)  
+        spin_speed = max(0, spin_speed - 1)
         if spin_speed == 0:
             spinning = False  
     
     draw_spinner(angle)
-    pygame.time.delay(50)
+    clock.tick(60)  
 
 pygame.quit()
 
