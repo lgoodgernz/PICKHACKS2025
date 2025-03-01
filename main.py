@@ -37,6 +37,12 @@ desk4_original = pygame.transform.scale(desk4_img, (309, 178))  # Resizing Desk4
 desk4_pressed = pygame.transform.scale(desk4_img, (309, 178))  # Make pressed version the same size
 desk4_rect = desk4_original.get_rect(topleft=(592, 186))  # Desk4 position at (592, 186)
 
+# New Desk5 button (New button, leads to any specific game)
+desk5_img = pygame.image.load("Desk5.png")
+desk5_original = pygame.transform.scale(desk5_img, (244, 153))  # Resizing Desk5 to 244x153
+desk5_pressed = pygame.transform.scale(desk5_img, (244, 153))  # Make pressed version the same size
+desk5_rect = desk5_original.get_rect(topleft=(114, 503))  # Desk5 position at (114, 503)
+
 # New Exit button
 exit_img = pygame.image.load("Exit.png")
 exit_original = pygame.transform.scale(exit_img, (90, 32))  # Resizing Exit button to 90x32
@@ -53,6 +59,7 @@ def draw_main_menu():
     SCREEN.blit(desk2_pressed if clicked else desk2_original, desk2_rect.topleft)  # Draw Desk2
     SCREEN.blit(desk3_pressed if clicked else desk3_original, desk3_rect.topleft)  # Draw Desk3
     SCREEN.blit(desk4_pressed if clicked else desk4_original, desk4_rect.topleft)  # Draw Desk4
+    SCREEN.blit(desk5_pressed if clicked else desk5_original, desk5_rect.topleft)  # Draw Desk5
     SCREEN.blit(exit_pressed if clicked else exit_original, exit_rect.topleft)  # Draw Exit button
     pygame.display.update()
 
@@ -86,6 +93,9 @@ def main():
                     current_game = "clicker"  # desk3 now leads to clicker game
                 elif desk4_rect.collidepoint(event.pos):  # desk4 click should bring to horse game
                     current_game = "horse_game"  # desk4 leads to horse game
+                elif desk5_rect.collidepoint(event.pos):  # New desk5 click to open desired game
+                    print("Desk5 clicked!")  # Test message for Desk5 (change to actual game)
+                    current_game = "clicker"  # Change this to the game you want Desk5 to open
                 elif exit_rect.collidepoint(event.pos):  # Check if Exit button is clicked
                     print("Exiting the game...")  # Test message for Exit
                     running = False  # Exit the game loop
