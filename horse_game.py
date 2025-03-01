@@ -106,9 +106,16 @@ def main_menu():
     bet_amount = 10  # Initial bet amount
     horse_number = 1  # Initial horse number selection
     running = True
+
+    # Load background image outside the loop for efficiency
+    background = pygame.image.load("horsemenu.png")
+
     while running:
-        background = pygame.image.load("horsemenu.png")
-        screen.fill(BLACK)
+        screen.blit(background, (0, 0))  # Draw background
+
+        # Keep the event system active
+        pygame.event.pump()
+
         # Draw the start button
         mouse_x, mouse_y = pygame.mouse.get_pos()
         if BUTTON_RECT.collidepoint((mouse_x, mouse_y)):
@@ -120,15 +127,6 @@ def main_menu():
         font = pygame.font.Font(None, 36)
         text = font.render("Start Race", True, (255, 255, 255))
         screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
-
-
-
-
-        pygame.display.flip()
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                print("ESC pressed, returning to menu.")  # Debugging
-                game_data.save_money(game_data.money)  # Save before exiting
-                return 
 
         # Display money
         text = font.render(f"Money: ${money}", True, WHITE)
@@ -146,6 +144,7 @@ def main_menu():
         instructions = font.render("UP/DOWN to adjust bet, LEFT/RIGHT to change horse", True, (255, 255, 255))
         screen.blit(instructions, (WIDTH // 2 - instructions.get_width() // 2, HEIGHT // 2 + 200))
 
+        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -162,6 +161,10 @@ def main_menu():
                     horse_number = max(1, horse_number - 1)
                 elif event.key == pygame.K_RIGHT:  # Select next horse
                     horse_number = min(num_horses, horse_number + 1)
+                elif event.key == pygame.K_ESCAPE:  # Escape to exit the menu
+                    print("ESC pressed, returning to menu.")
+                    game_data.save_money(game_data.money)  # Save before exiting
+                    return  # Exit to main menu
 
         pygame.display.flip()
 
