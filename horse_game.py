@@ -89,6 +89,15 @@ def horse_game(SCREEN):
                         horse_number = max(1, horse_number - 1)
                     elif event.key == pygame.K_RIGHT:  # Select next horse
                         horse_number = min(8, horse_number + 1)
+                    elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                         print("ESC pressed, returning to menu.")  # Debugging
+                         game_data.save_money(game_data.money)  # Save before exiting
+                         return  # Exit back to main menu
+                    elif event.key == pygame.K_SPACE:
+                         start_race(bet_amount, horse_number)  # Start the race when the button is clicked
+                         running = False
+                         
+
 
         game_data.save_money(game_data.money)  # Save before exiting
 
