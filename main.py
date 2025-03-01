@@ -49,6 +49,24 @@ exit_original = pygame.transform.scale(exit_img, (90, 32))  # Resizing Exit butt
 exit_pressed = pygame.transform.scale(exit_img, (90, 32))  # Make pressed version the same size
 exit_rect = exit_original.get_rect(topleft=(693, 728))  # Exit button position at (693, 728)
 
+# New HorseBoard button (Position: (636, 9) and Dimensions: W: 215, H: 175)
+horseboard_img = pygame.image.load("HorseBoard.png")
+horseboard_original = pygame.transform.scale(horseboard_img, (215, 175))  # Resizing HorseBoard to 215x175
+horseboard_pressed = pygame.transform.scale(horseboard_img, (215, 175))  # Make pressed version the same size
+horseboard_rect = horseboard_original.get_rect(topleft=(636, 9))  # HorseBoard position at (636, 9)
+
+# New Get_Money button (Position: (279, -24) and Dimensions: W: 157, H: 157)
+get_money_img = pygame.image.load("Get_Money.png")
+get_money_original = pygame.transform.scale(get_money_img, (157, 157))  # Resizing Get_Money button to 157x157
+get_money_pressed = pygame.transform.scale(get_money_img, (157, 157))  # Make pressed version the same size
+get_money_rect = get_money_original.get_rect(topleft=(279, -24))  # Get_Money button position at (279, -24)
+
+# New Help button (Position: (947, -78) and Dimensions: W: 277, H: 277)
+help_img = pygame.image.load("Help.png")
+help_original = pygame.transform.scale(help_img, (277, 277))  # Resizing Help button to 277x277
+help_pressed = pygame.transform.scale(help_img, (277, 277))  # Make pressed version the same size
+help_rect = help_original.get_rect(topleft=(947, -78))  # Help button position at (947, -78)
+
 # Game state
 current_game = None
 clicked = False
@@ -60,6 +78,9 @@ def draw_main_menu():
     SCREEN.blit(desk3_pressed if clicked else desk3_original, desk3_rect.topleft)  # Draw Desk3
     SCREEN.blit(desk4_pressed if clicked else desk4_original, desk4_rect.topleft)  # Draw Desk4
     SCREEN.blit(desk5_pressed if clicked else desk5_original, desk5_rect.topleft)  # Draw Desk5
+    SCREEN.blit(horseboard_pressed if clicked else horseboard_original, horseboard_rect.topleft)  # Draw HorseBoard
+    SCREEN.blit(get_money_pressed if clicked else get_money_original, get_money_rect.topleft)  # Draw Get_Money button
+    SCREEN.blit(help_pressed if clicked else help_original, help_rect.topleft)  # Draw Help button
     SCREEN.blit(exit_pressed if clicked else exit_original, exit_rect.topleft)  # Draw Exit button
     pygame.display.update()
 
@@ -96,6 +117,15 @@ def main():
                 elif desk5_rect.collidepoint(event.pos):  # New desk5 click to open desired game
                     print("Desk5 clicked!")  # Test message for Desk5 (change to actual game)
                     current_game = "clicker"  # Change this to the game you want Desk5 to open
+                elif horseboard_rect.collidepoint(event.pos):  # HorseBoard click (if needed for another game)
+                    print("HorseBoard clicked!")  # Test message for HorseBoard (change to actual game)
+                    current_game = "horse_game"  # Open horse game when HorseBoard is clicked
+                elif get_money_rect.collidepoint(event.pos):  # Get_Money button clicked
+                    print("Get_Money button clicked!")
+                    current_game = "clicker"  # Get_Money button triggers clicker game
+                elif help_rect.collidepoint(event.pos):  # Help button clicked
+                    print("Help button clicked!")
+                    current_game = "clicker"  # Help button triggers clicker game
                 elif exit_rect.collidepoint(event.pos):  # Check if Exit button is clicked
                     print("Exiting the game...")  # Test message for Exit
                     running = False  # Exit the game loop
