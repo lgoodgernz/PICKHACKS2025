@@ -28,10 +28,11 @@ desk2_pressed = pygame.transform.scale(desk2_img, (237, 122))
 desk2_rect = desk2_original.get_rect(topleft=(1001, 199))
 
 # Desk3 button
+# New Desk3 button (Updated position and size)
 desk3_img = pygame.image.load("Desk3.png")
-desk3_original = pygame.transform.scale(desk3_img, (251, 124))
-desk3_pressed = pygame.transform.scale(desk3_img, (251, 124))
-desk3_rect = desk3_original.get_rect(topleft=(232, 199))
+desk3_original = pygame.transform.scale(desk3_img, (187, 253))  # Resizing Desk3 to 187x253
+desk3_pressed = pygame.transform.scale(desk3_img, (187, 253))  # Make pressed version the same size
+desk3_rect = desk3_original.get_rect(topleft=(492, 495))  # Desk3 new position at (492, 495)
 
 # Desk4 button
 desk4_img = pygame.image.load("Desk4.png")
