@@ -10,12 +10,12 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Spinner Game")
 
 
-WHITE = (255, 255, 255)
+WHITE = (0, 0, 0)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
-COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 165, 0), (128, 0, 128)]
+COLORS = [(255, 105, 180), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 165, 0), (128, 0, 128)]
 
 
 pygame.font.init()
@@ -45,7 +45,7 @@ def draw_spinner(angle):
     
    
     title_font = pygame.font.Font(None, 50)
-    title_text = title_font.render("Spinner Game", True, BLACK)
+    title_text = title_font.render("Spinner Game", True, RED)
     screen.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, 20))
     
     pygame.draw.circle(screen, BLACK, center, radius, 3)
