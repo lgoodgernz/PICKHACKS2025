@@ -4,7 +4,6 @@ import game_data  # Import shared money variable
 
 def horse_game(SCREEN):
     pygame.init()
-    money = game_data.load_money()
 
     # Game Constants
     WIDTH, HEIGHT = SCREEN.get_width(), SCREEN.get_height()
@@ -30,7 +29,6 @@ def horse_game(SCREEN):
 
     # Main menu loop
     def main_menu():
-        nonlocal money  # Use nonlocal to modify the outer money variable
         bet_amount = 10  # Initial bet amount
         horse_number = 1  # Initial horse number selection
         running = True
@@ -42,7 +40,7 @@ def horse_game(SCREEN):
             SCREEN.fill(BLACK)
 
             # Display money
-            text = font.render(f"Money: ${money}", True, WHITE)
+            text = font.render(f"Money: ${game_data.money}", True, WHITE)
             screen.blit(text, (20, 20))
 
             # Draw Start Button with Hover Effect
@@ -70,18 +68,19 @@ def horse_game(SCREEN):
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    game_data.save_money(money)  # Save before quitting
+                    game_data.save_money(game_data.money)  # Save before quitting
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if EXIT_BUTTON.collidepoint((mouse_x, mouse_y)):
-                        game_data.save_money(money)  # Save before exiting
+                        game_data.save_money(game_data.money)  # Save before exiting
                         return  # Exit back to menu
                     elif BUTTON_RECT.collidepoint((mouse_x, mouse_y)):
-                        if bet_amount <= money:
+                        if bet_amount <= game_data.money:
                             start_race(bet_amount, horse_number)  # Start the race when the button is clicked
+                            running = False  # Close main menu after start
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP and bet_amount < money:  # Increase bet if money allows
-                        bet_amount = min(bet_amount + 10, money)
+                    if event.key == pygame.K_UP and bet_amount < game_data.money:  # Increase bet if money allows
+                        bet_amount = min(bet_amount + 10, game_data.money)
                     elif event.key == pygame.K_DOWN and bet_amount > 10:  # Decrease bet, with a minimum of 10
                         bet_amount -= 10
                     elif event.key == pygame.K_LEFT:  # Select previous horse
@@ -89,11 +88,9 @@ def horse_game(SCREEN):
                     elif event.key == pygame.K_RIGHT:  # Select next horse
                         horse_number = min(8, horse_number + 1)
 
-        game_data.save_money(money)  # Save before exiting
+        game_data.save_money(game_data.money)  # Save before exiting
 
     def start_race(bet_amount, selected_horse):
-        nonlocal money  # Use nonlocal money to update it
-
         # Initialize horses
         horses = [{"x": 0, "y": i * (HEIGHT // 8) + 20, "speed": random.randint(2, 5)} for i in range(8)]
 
@@ -106,7 +103,7 @@ def horse_game(SCREEN):
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    game_data.save_money(money)  # Save before quitting
+                    game_data.save_money(game_data.money)  # Save before quitting
                     running = False
 
             # Move horses
@@ -129,15 +126,16 @@ def horse_game(SCREEN):
         # Calculate winnings or losses
         if winner == selected_horse:
             winnings = bet_amount * 8
-            money += winnings
+            game_data.money += winnings
             print(f"Your horse won! You earned ${winnings}!")
         else:
-            money -= bet_amount
+            game_data.money -= bet_amount
             print(f"Your horse lost! You lost ${bet_amount}.")
 
-        game_data.save_money(money)  # Save after race
+        game_data.save_money(game_data.money)  # Save after race
 
-        main_menu()  # Return to main menu
+        # Return to main menu after the race finishes
+        main_menu()
 
     main_menu()  # Start the game
 
