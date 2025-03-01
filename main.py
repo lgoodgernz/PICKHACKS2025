@@ -4,6 +4,7 @@ from roulette import roulette_game  # Import the roulette game
 from horse_game import horse_game  # Import the horse game
 from nba import nba_game # Import the NBA game
 from spinner import spinner_game # Import the Spinner game
+from help_page import help_page
 
 pygame.init()
 
@@ -109,6 +110,9 @@ def main():
         elif current_game == "spinner":
             spinner_game(SCREEN)
             current_game = None
+        elif current_game == "help_page":
+            help_page(SCREEN)
+            current_game = None
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -133,7 +137,7 @@ def main():
                     current_game = "clicker"
                 elif help_rect.collidepoint(event.pos):
                     print("Help button clicked!")
-                    current_game = "clicker"
+                    current_game = "help_page"
                 elif exit_rect.collidepoint(event.pos):
                     print("Exiting the game...")
                     running = False
