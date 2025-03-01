@@ -135,4 +135,4 @@ def horse_game():
     main_menu()
 
 # Call the horse_game function to start the game
-horse_game()
+
