@@ -1,6 +1,7 @@
 import pygame
 import game_data
 from clicker import clicker_game
+from roulette import roulette_game  # Import the roulette game
 
 pygame.init()
 
@@ -59,17 +60,20 @@ def main():
         elif current_game == "clicker":
             clicker_game(SCREEN)
             current_game = None  # Return to the main menu after finishing the game
+        elif current_game == "roulette":
+            roulette_game(SCREEN)  # Show the roulette game
+            current_game = None  # Return to the main menu after finishing the game
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN and current_game is None:
-                if desk_rect.collidepoint(event.pos):
-                    current_game = "clicker"  # All buttons now bring you to clicker game
+                if desk_rect.collidepoint(event.pos):  # desk1 click should bring to roulette game
+                    current_game = "roulette"  # desk1 now leads to roulette game
                 elif desk2_rect.collidepoint(event.pos):
-                    current_game = "clicker"  # All buttons now bring you to clicker game
+                    current_game = "clicker"  # desk2 leads to clicker game
                 elif desk3_rect.collidepoint(event.pos):
-                    current_game = "clicker"  # All buttons now bring you to clicker game
+                    current_game = "clicker"  # desk3 leads to clicker game
                 elif exit_rect.collidepoint(event.pos):  # Check if Exit button is clicked
                     print("Exiting the game...")  # Test message for Exit
                     running = False  # Exit the game loop
