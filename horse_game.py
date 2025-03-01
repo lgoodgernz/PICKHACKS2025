@@ -51,7 +51,7 @@ def horse_game(SCREEN):
                 pygame.draw.rect(screen, BUTTON_HOVER_COLOR, BUTTON_RECT)
             else:
                 pygame.draw.rect(screen, BUTTON_COLOR, BUTTON_RECT)
-            
+
             text = font.render("Start Race", True, (255, 255, 255))
             screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
 
@@ -59,6 +59,12 @@ def horse_game(SCREEN):
             pygame.draw.rect(screen, (255, 0, 0), EXIT_BUTTON)
             exit_text = font.render("Exit", True, WHITE)
             screen.blit(exit_text, (EXIT_BUTTON.x + 20, EXIT_BUTTON.y + 10))
+
+            # Draw Bet Amount and Horse Number
+            bet_text = font.render(f"Bet: ${bet_amount}", True, WHITE)
+            screen.blit(bet_text, (WIDTH // 2 - bet_text.get_width() // 2, HEIGHT // 2 + 100))
+            horse_text = font.render(f"Horse: {horse_number}", True, WHITE)
+            screen.blit(horse_text, (WIDTH // 2 - horse_text.get_width() // 2, HEIGHT // 2 + 150))
 
             pygame.display.flip()  # Ensure everything is updated before checking events
 
