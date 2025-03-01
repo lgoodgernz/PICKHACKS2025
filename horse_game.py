@@ -130,7 +130,8 @@ def horse_game(SCREEN):
 
         game_data.save_money(money)
         pygame.quit()
-main_menu()
+    main_menu()
+
     # Run the main menu
 
 
