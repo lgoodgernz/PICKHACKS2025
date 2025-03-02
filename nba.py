@@ -87,9 +87,10 @@ def nba_game(SCREEN):
                 if event.key == pygame.K_ESCAPE:
                     game_data.save_money(game_data.money)
                     return
-                elif event.key == pygame.K_SPACE:
+                elif event.key == pygame.K_SPACE and bet_amount < game_data.money:
                     if bet_amount > game_data.money and game_data.money > 0:
                         result_text = "Not enough money!"
+                        bet_amount = 5
                     elif bet_amount < 5:
                         result_text = "Minimum bet is $5!"
                     else:
@@ -109,7 +110,8 @@ def nba_game(SCREEN):
                     selected_team = 1 if selected_team == 0 else 0
                 # Add key controls for adjusting bet amount
                 elif event.key == pygame.K_PLUS or event.key == pygame.K_EQUALS:
-                    bet_amount += 5
+                    if bet_amount + 5 <= game_data.money:
+                     bet_amount += 5
                 elif event.key == pygame.K_MINUS:
                     bet_amount = max(5, bet_amount - 5)
             # Add key handling for showing_results state to dismiss results
