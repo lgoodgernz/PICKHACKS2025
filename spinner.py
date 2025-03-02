@@ -5,116 +5,365 @@ import game_data
 
 def spinner_game(SCREEN):
     WIDTH, HEIGHT = SCREEN.get_width(), SCREEN.get_height()
+    
+    # Enhanced color palette
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
-    RED = (255, 0, 0)
-    GREEN = (0, 255, 0)
-    BLUE = (0, 0, 255)
-    COLORS = [(255, 108, 190), (0, 255, 0), (0, 0, 255),
-              (255, 255, 0), (255, 165, 0), (128, 0, 128)]
-
-    # Font
-    font = pygame.font.Font(None, 36)
-    title_font = pygame.font.Font(None, 50)
+    RED = (220, 20, 60)  # Crimson red
+    GREEN = (34, 139, 34)  # Forest green
+    BLUE = (30, 144, 255)  # Dodger blue
+    GOLD = (255, 215, 0)
+    PURPLE = (148, 0, 211)
+    BACKGROUND_COLOR = (240, 248, 255)  # Light blue background
+    
+    # Enhanced spinner colors - more vibrant casino-style colors
+    COLORS = [
+        (220, 20, 60),    # Crimson
+        (65, 105, 225),   # Royal Blue
+        (255, 215, 0),    # Gold
+        (34, 139, 34),    # Forest Green
+        (148, 0, 211),    # Purple
+        (255, 140, 0)     # Dark Orange
+    ]
+    
+    # Button colors
+    BUTTON_COLOR = (70, 130, 180)  # Steel blue
+    BUTTON_HOVER_COLOR = (100, 149, 237)  # Cornflower blue
+    BUTTON_TEXT_COLOR = WHITE
+    
+    # Load fancy font if available, otherwise use default
+    try:
+        title_font = pygame.font.Font("freesansbold.ttf", 42)
+        large_font = pygame.font.Font("freesansbold.ttf", 30)
+        font = pygame.font.Font("freesansbold.ttf", 20)
+        small_font = pygame.font.Font("freesansbold.ttf", 16)
+    except:
+        title_font = pygame.font.Font(None, 48)
+        large_font = pygame.font.Font(None, 36)
+        font = pygame.font.Font(None, 24)
+        small_font = pygame.font.Font(None, 18)
 
     # Spinner variables
-    center = (WIDTH // 2, HEIGHT // 2)
-    radius = 200
+    center = (WIDTH // 2, HEIGHT // 2 - 20)  # Moved up slightly
+    radius = 180
+    arrow_length = radius - 20
     angle = 0
     spinning = False
     spin_speed = 0
+    
+    # Shadow offset for 3D effect
+    shadow_offset = 4
 
-    # Betting variables
+    # Game state variables
     bet_amount = 5
     first_number = None
     second_number = None
     bet_choice = None  # "HIGHER" or "LOWER"
     result_text = ""
-    has_bet = False  # Flag to track if player has placed a bet
+    game_state = "CHOOSE_BET"  # States: CHOOSE_BET, FIRST_SPIN, CHOOSE_HIGHER_LOWER, SECOND_SPIN, RESULT
+    
+    # Button hover state
+    hovered_button = None
 
     # Section labels
     labels = ["1", "2", "3", "4", "5", "6"]
 
     # Frame rate control
     clock = pygame.time.Clock()
+    
+    # Helper function to create fancy buttons
+    def draw_button(rect, color, text, text_color=WHITE, hover=False):
+        # Draw button shadow for 3D effect
+        shadow_rect = rect.copy()
+        shadow_rect.x += shadow_offset
+        shadow_rect.y += shadow_offset
+        pygame.draw.rect(SCREEN, (50, 50, 50, 180), shadow_rect, border_radius=12)
+        
+        # Draw the main button
+        pygame.draw.rect(SCREEN, 
+                         BUTTON_HOVER_COLOR if hover else color, 
+                         rect, 
+                         border_radius=12)
+        
+        # Add a slight inner border
+        pygame.draw.rect(SCREEN, 
+                         (color[0]-30 if color[0]>30 else 0, 
+                          color[1]-30 if color[1]>30 else 0,
+                          color[2]-30 if color[2]>30 else 0), 
+                         rect, 
+                         width=2, 
+                         border_radius=12)
+        
+        # Render text
+        text_surface = font.render(text, True, text_color)
+        text_rect = text_surface.get_rect(center=rect.center)
+        SCREEN.blit(text_surface, text_rect)
+        
+        return rect
 
     running = True
     while running:
-        SCREEN.fill(WHITE)
-
-        # Title
-        title_text = title_font.render("Higher or Lower Spinner", True, BLACK)
+        mouse_pos = pygame.mouse.get_pos()
+        SCREEN.fill(BACKGROUND_COLOR)
+        
+        # Reset hovered button
+        hovered_button = None
+        
+        # Draw decorative casino elements
+        # Top and bottom borders
+        pygame.draw.rect(SCREEN, GOLD, (0, 0, WIDTH, 10))
+        pygame.draw.rect(SCREEN, GOLD, (0, HEIGHT-10, WIDTH, 10))
+        
+        # Draw a fancy title background
+        pygame.draw.rect(SCREEN, (25, 25, 112), (0, 10, WIDTH, 70))  # Midnight Blue strip
+        for i in range(10):
+            pygame.draw.circle(SCREEN, GREEN, (50 + i*150, 45), 5)  # Gold dots
+            
+        # Title with shadow for 3D effect
+        title_shadow = title_font.render("🎰 Higher or Lower Spinner 🎰", True, BLACK)
+        title_text = title_font.render("🎰 Higher or Lower Spinner 🎰", True, GOLD)
+        SCREEN.blit(title_shadow, (WIDTH // 2 - title_shadow.get_width() // 2 + 2, 22))
         SCREEN.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, 20))
 
-        # Display Money and Bet
-        money_text = font.render(f"Money: ${game_data.money}", True, BLACK)
-        SCREEN.blit(money_text, (20, 20))
-
-        bet_text = font.render(f"Bet: ${bet_amount}", True, BLACK)
-        SCREEN.blit(bet_text, (20, 60))
-
+        # Game info panel with shadow
+        info_panel = pygame.Rect(20, 100, 260, 150)
+        pygame.draw.rect(SCREEN, (50, 50, 50, 180), pygame.Rect(info_panel.x+4, info_panel.y+4, info_panel.width, info_panel.height), border_radius=15)
+        pygame.draw.rect(SCREEN, (25, 25, 112), info_panel, border_radius=15)
+        pygame.draw.rect(SCREEN, GOLD, info_panel, width=2, border_radius=15)
+        
+        # Display Money and Bet with some glitter
+        money_text = large_font.render(f"Money: ${game_data.money}", True, GOLD)
+        SCREEN.blit(money_text, (40, 120))
+        
+        bet_text = large_font.render(f"Bet: ${bet_amount}", True, WHITE)
+        SCREEN.blit(bet_text, (40, 165))
+        
         # Display current bet choice if made
         if bet_choice:
-            choice_text = font.render(f"Betting: {bet_choice}", True, BLUE if bet_choice == "LOWER" else GREEN)
-            SCREEN.blit(choice_text, (20, 100))
+            choice_color = BLUE if bet_choice == "LOWER" else GREEN
+            choice_text = large_font.render(f"Betting: {bet_choice}", True, choice_color)
+            SCREEN.blit(choice_text, (40, 210))
 
-        # Spinner
-        pygame.draw.circle(SCREEN, BLACK, center, radius, 3)
+        # Spinner with nicer 3D effect
+        # Spinner shadow for 3D effect
+        pygame.draw.circle(SCREEN, (50, 50, 50, 180), (center[0]+shadow_offset, center[1]+shadow_offset), radius+5)
+        
+        # Outer ring of the spinner
+        pygame.draw.circle(SCREEN, GOLD, center, radius+10, 0)
+        pygame.draw.circle(SCREEN, BLACK, center, radius, 0)
+        
+        # Spinner sections with nicer colors
+        for i in range(6):
+            start_angle = math.radians(i * 60)
+            end_angle = math.radians((i+1) * 60)
+            
+            # Calculate points for the polygon
+            points = [center]
+            for j in range(60):
+                angle_rad = start_angle + (end_angle - start_angle) * j / 60
+                x = center[0] + radius * math.cos(angle_rad)
+                y = center[1] + radius * math.sin(angle_rad)
+                points.append((x, y))
+                
+            # Close the polygon
+            points.append((center[0] + radius * math.cos(end_angle), 
+                          center[1] + radius * math.sin(end_angle)))
+            
+            # Draw filled section
+            pygame.draw.polygon(SCREEN, COLORS[i], points)
+            
+            # Add a subtle gradient/shading effect (simplified)
+            for k in range(5):
+                inner_radius = radius - (10 * k)
+                if inner_radius <= 0:
+                    break
+                    
+                x1 = center[0] + inner_radius * math.cos(start_angle)
+                y1 = center[1] + inner_radius * math.sin(start_angle)
+                x2 = center[0] + inner_radius * math.cos(end_angle)
+                y2 = center[1] + inner_radius * math.sin(end_angle)
+                
+                pygame.draw.line(SCREEN, 
+                                (min(COLORS[i][0]+20, 255), 
+                                 min(COLORS[i][1]+20, 255), 
+                                 min(COLORS[i][2]+20, 255)), 
+                                (x1, y1), (x2, y2), 1)
 
+        # Section dividing lines
         for i in range(6):
             section_angle = math.radians(i * 60)
             x = center[0] + radius * math.cos(section_angle)
             y = center[1] + radius * math.sin(section_angle)
-            pygame.draw.line(SCREEN, BLACK, center, (x, y), 2)
+            pygame.draw.line(SCREEN, WHITE, center, (x, y), 2)
 
-            # Fill sections
-            pygame.draw.polygon(SCREEN, COLORS[i], [center, (x, y),
-                (center[0] + radius * math.cos(math.radians((i+1) * 60)),
-                 center[1] + radius * math.sin(math.radians((i+1) * 60)))])
+            # Section numbers - make them more visible with background circles
+            text_angle = math.radians(i * 60 + 30)
+            text_x = center[0] + (radius * 0.7) * math.cos(text_angle)
+            text_y = center[1] + (radius * 0.7) * math.sin(text_angle)
+            
+            # Number background circle
+            pygame.draw.circle(SCREEN, WHITE, (int(text_x), int(text_y)), 20)
+            
+            # Number text
+            text_surface = large_font.render(labels[i], True, BLACK)
+            text_rect = text_surface.get_rect(center=(text_x, text_y))
+            SCREEN.blit(text_surface, text_rect)
+        
+        # Center hub of spinner
+        pygame.draw.circle(SCREEN, GOLD, center, 20)
+        pygame.draw.circle(SCREEN, (70, 70, 70), center, 15)
 
-            # Section numbers
-            text_x = center[0] + (radius // 1.5) * math.cos(math.radians(i * 60 + 30))
-            text_y = center[1] + (radius // 1.5) * math.sin(math.radians(i * 60 + 30))
-            text_surface = font.render(labels[i], True, BLACK)
-            SCREEN.blit(text_surface, (text_x - 10, text_y - 10))
+        # Spinner arrow with nicer design
+        arrow_angle = math.radians(angle)
+        arrow_x = center[0] + arrow_length * math.cos(arrow_angle)
+        arrow_y = center[1] + arrow_length * math.sin(arrow_angle)
+        
+        # Arrow with shadow for 3D effect
+        shadow_start = (center[0] + shadow_offset, center[1] + shadow_offset)
+        shadow_end = (arrow_x + shadow_offset, arrow_y + shadow_offset)
+        
+        # Draw arrow shadow
+        pygame.draw.line(SCREEN, (50, 50, 50), shadow_start, shadow_end, 8)
+        
+        # Draw arrow base
+        pygame.draw.line(SCREEN, RED, center, (arrow_x, arrow_y), 8)
+        
+        # Draw arrow head
+        head_length = 20
+        head_angle1 = arrow_angle + math.radians(150)
+        head_angle2 = arrow_angle - math.radians(150)
+        
+        head_x1 = arrow_x + head_length * math.cos(head_angle1)
+        head_y1 = arrow_y + head_length * math.sin(head_angle1)
+        head_x2 = arrow_x + head_length * math.cos(head_angle2)
+        head_y2 = arrow_y + head_length * math.sin(head_angle2)
+        
+        pygame.draw.polygon(SCREEN, RED, [(arrow_x, arrow_y), (head_x1, head_y1), (head_x2, head_y2)])
+        
+        # Control panel area
+        control_panel = pygame.Rect(WIDTH // 2 - 350, HEIGHT - 180, 700, 150)
+        pygame.draw.rect(SCREEN, (50, 50, 50, 180), pygame.Rect(control_panel.x+4, control_panel.y+4, control_panel.width, control_panel.height), border_radius=15)
+        pygame.draw.rect(SCREEN, (25, 25, 112), control_panel, border_radius=15)
+        pygame.draw.rect(SCREEN, GOLD, control_panel, width=2, border_radius=15)
 
-        # Spinner arrow
-        arrow_x = center[0] + (radius - 30) * math.cos(math.radians(angle))
-        arrow_y = center[1] + (radius - 30) * math.sin(math.radians(angle))
-        pygame.draw.line(SCREEN, RED, center, (arrow_x, arrow_y), 5)
-
-        # Instructions and betting options
-        if not has_bet and not spinning:
-            instruction_text = font.render("Place your bet: Will the second number be HIGHER or LOWER?", True, BLACK)
-            SCREEN.blit(instruction_text, (WIDTH // 2 - instruction_text.get_width() // 2, HEIGHT - 160))
-
+        # Instructions and buttons based on game state
+        if game_state == "CHOOSE_BET":
+            instruction_text = large_font.render("Set your bet amount with UP/DOWN arrow keys", True, WHITE)
+            instruction_rect = instruction_text.get_rect(center=(WIDTH // 2, HEIGHT - 150))
+            SCREEN.blit(instruction_text, instruction_rect)
+            
+            # Bet amount buttons
+            decrease_btn = pygame.Rect(WIDTH // 2 - 180, HEIGHT - 100, 50, 40)
+            increase_btn = pygame.Rect(WIDTH // 2 + 130, HEIGHT - 100, 50, 40)
+            
+            # Check button hover
+            decrease_hover = decrease_btn.collidepoint(mouse_pos)
+            increase_hover = increase_btn.collidepoint(mouse_pos)
+            
+            draw_button(decrease_btn, (180, 40, 40), "-", hover=decrease_hover)
+            draw_button(increase_btn, (40, 180, 40), "+", hover=increase_hover)
+            
+            if decrease_hover: hovered_button = "decrease"
+            if increase_hover: hovered_button = "increase"
+            
+            # Current bet display
+            bet_display = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 100, 200, 40)
+            pygame.draw.rect(SCREEN, (0, 0, 50), bet_display, border_radius=12)
+            pygame.draw.rect(SCREEN, GOLD, bet_display, 2, border_radius=12)
+            
+            current_bet = large_font.render(f"${bet_amount}", True, WHITE)
+            SCREEN.blit(current_bet, current_bet.get_rect(center=bet_display.center))
+            
+            # Confirm button
+            confirm_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 100, 200, 40)
+            confirm_hover = confirm_btn.collidepoint(mouse_pos)
+            draw_button(confirm_btn, BUTTON_COLOR, "PLACE BET", hover=confirm_hover)
+            
+            if confirm_hover: hovered_button = "confirm"
+            
+        elif game_state == "FIRST_SPIN":
+            instruction_text = large_font.render("Press SPACE to spin for your first number", True, WHITE)
+            instruction_rect = instruction_text.get_rect(center=(WIDTH // 2, HEIGHT - 120))
+            SCREEN.blit(instruction_text, instruction_rect)
+            
+            # Spin button
+            spin_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 70, 200, 40)
+            spin_hover = spin_btn.collidepoint(mouse_pos)
+            draw_button(spin_btn, BUTTON_COLOR, "SPIN", hover=spin_hover)
+            
+            if spin_hover: hovered_button = "spin"
+            
+        elif game_state == "CHOOSE_HIGHER_LOWER":
+            # Show first number with animation
+            first_num_text = large_font.render(f"First number: {first_number}", True, WHITE)
+            SCREEN.blit(first_num_text, first_num_text.get_rect(center=(WIDTH // 2, HEIGHT - 160)))
+            
+            # Question text
+            question_text = large_font.render("Will the next number be HIGHER or LOWER?", True, GOLD)
+            SCREEN.blit(question_text, question_text.get_rect(center=(WIDTH // 2, HEIGHT - 120)))
+            
             # Higher/Lower buttons
-            higher_btn = pygame.Rect(WIDTH // 2 - 150, HEIGHT - 120, 100, 40)
-            lower_btn = pygame.Rect(WIDTH // 2 + 50, HEIGHT - 120, 100, 40)
+            higher_btn = pygame.Rect(WIDTH // 2 - 220, HEIGHT - 70, 200, 40)
+            lower_btn = pygame.Rect(WIDTH // 2 + 20, HEIGHT - 70, 200, 40)
+            
+            higher_hover = higher_btn.collidepoint(mouse_pos)
+            lower_hover = lower_btn.collidepoint(mouse_pos)
+            
+            draw_button(higher_btn, GREEN, "HIGHER ↑", hover=higher_hover)
+            draw_button(lower_btn, BLUE, "LOWER ↓", hover=lower_hover)
+            
+            if higher_hover: hovered_button = "higher"
+            if lower_hover: hovered_button = "lower"
+            
+        elif game_state == "SECOND_SPIN":
+            # Show first number and bet choice
+            first_text = font.render(f"First Number: {first_number}", True, WHITE)
+            SCREEN.blit(first_text, (WIDTH // 2 - 250, HEIGHT - 150))
+            
+            bet_choice_color = GREEN if bet_choice == "HIGHER" else BLUE
+            choice_text = font.render(f"Your Bet: {bet_choice}", True, bet_choice_color)
+            SCREEN.blit(choice_text, (WIDTH // 2 + 50, HEIGHT - 150))
+            
+            # Spin instruction
+            spin_text = large_font.render("Press SPACE for final spin!", True, GOLD)
+            SCREEN.blit(spin_text, spin_text.get_rect(center=(WIDTH // 2, HEIGHT - 110)))
+            
+            # Spin button
+            spin_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 70, 200, 40)
+            spin_hover = spin_btn.collidepoint(mouse_pos)
+            draw_button(spin_btn, BUTTON_COLOR, "SPIN", hover=spin_hover)
+            
+            if spin_hover: hovered_button = "spin"
+            
+        elif game_state == "RESULT":
+            # Show both numbers and result
+            result_box = pygame.Rect(WIDTH // 2 - 300, HEIGHT - 170, 600, 100)
+            pygame.draw.rect(SCREEN, (0, 0, 50), result_box, border_radius=15)
+            pygame.draw.rect(SCREEN, GOLD, result_box, width=2, border_radius=15)
+            
+            # Format the result text for better display
+            if "won" in result_text:
+                result_display = large_font.render(result_text, True, GREEN)
+                # Add celebratory animation (sparkling effect would go here in a full implementation)
+            else:
+                result_display = large_font.render(result_text, True, RED)
+            
+            SCREEN.blit(result_display, result_display.get_rect(center=(WIDTH // 2, HEIGHT - 125)))
+            
+            # Play again button
+            play_again_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 60, 200, 40)
+            again_hover = play_again_btn.collidepoint(mouse_pos)
+            draw_button(play_again_btn, BUTTON_COLOR, "PLAY AGAIN", hover=again_hover)
+            
+            if again_hover: hovered_button = "again"
 
-            pygame.draw.rect(SCREEN, GREEN, higher_btn)
-            pygame.draw.rect(SCREEN, BLUE, lower_btn)
-
-            higher_text = font.render("HIGHER", True, BLACK)
-            lower_text = font.render("LOWER", True, BLACK)
-
-            SCREEN.blit(higher_text, (higher_btn.x + 10, higher_btn.y + 10))
-            SCREEN.blit(lower_text, (lower_btn.x + 15, lower_btn.y + 10))
-        elif has_bet and first_number is None and not spinning:
-            instruction_text = font.render("Press SPACE for first spin", True, BLACK)
-            SCREEN.blit(instruction_text, (WIDTH // 2 - instruction_text.get_width() // 2, HEIGHT - 120))
-        elif has_bet and first_number is not None and second_number is None and not spinning:
-            instruction_text = font.render(f"First number: {first_number}. Press SPACE for second spin", True, BLACK)
-            SCREEN.blit(instruction_text, (WIDTH // 2 - instruction_text.get_width() // 2, HEIGHT - 120))
-
-        # Display Result
-        if result_text:
-            result_display = font.render(result_text, True, GREEN if "won" in result_text else RED)
-            SCREEN.blit(result_display, (WIDTH // 2 - result_display.get_width() // 2, HEIGHT - 200))
-
-        # Help text
-        controls_text = font.render("UP/DOWN: Adjust Bet | ESC: Return to Menu", True, BLACK)
-        SCREEN.blit(controls_text, (WIDTH // 2 - controls_text.get_width() // 2, HEIGHT - 40))
+        # Help text at the bottom
+        help_box = pygame.Rect(0, HEIGHT - 30, WIDTH, 30)
+        pygame.draw.rect(SCREEN, (25, 25, 112), help_box)
+        pygame.draw.rect(SCREEN, GOLD, help_box, 1)
+        
+        controls_text = small_font.render("UP/DOWN: Adjust Bet | SPACE: Spin | ESC: Return to Menu", True, WHITE)
+        SCREEN.blit(controls_text, controls_text.get_rect(center=(WIDTH // 2, HEIGHT - 15)))
 
         pygame.display.flip()
 
@@ -131,30 +380,29 @@ def spinner_game(SCREEN):
                 landed_number = int(labels[landed_section])
 
                 # If this is the first spin
-                if first_number is None:
+                if game_state == "FIRST_SPIN":
                     first_number = landed_number
                     result_text = f"First number: {first_number}"
-                # If this is the second spin (after betting)
-                else:
+                    game_state = "CHOOSE_HIGHER_LOWER"
+                    
+                # If this is the second spin
+                elif game_state == "SECOND_SPIN":
                     second_number = landed_number
-                    result_text = f"Second number: {second_number}"
-
+                    
                     # Process bet result
                     if (bet_choice == "HIGHER" and second_number > first_number) or \
                        (bet_choice == "LOWER" and second_number < first_number):
                         game_data.money += bet_amount * 2
                         result_text = f"You won! +${bet_amount * 2} (First: {first_number}, Second: {second_number})"
+                        # Play win sound effect would go here
                     else:
                         if second_number == first_number:
                             result_text = f"Same number ({second_number})! You lose."
                         else:
                             result_text = f"You lost! (First: {first_number}, Second: {second_number})"
+                        # Play loss sound effect would go here
 
-                    # Reset for next round
-                    first_number = None
-                    second_number = None
-                    bet_choice = None
-                    has_bet = False
+                    game_state = "RESULT"
 
         # Handle Events
         for event in pygame.event.get():
@@ -166,8 +414,8 @@ def spinner_game(SCREEN):
                     game_data.save_money(game_data.money)
                     return  # Exit back to menu
 
-                # Allow arrow keys for betting
-                if not spinning:
+                # Handle arrow keys for betting
+                if game_state == "CHOOSE_BET":
                     if event.key == pygame.K_UP and bet_amount + 5 <= game_data.money:
                         bet_amount += 5
                     elif event.key == pygame.K_DOWN and bet_amount - 5 >= 5:
@@ -175,31 +423,70 @@ def spinner_game(SCREEN):
 
                 # Space to spin
                 if event.key == pygame.K_SPACE and not spinning:
-                    if has_bet:  # Can only spin after betting
+                    if game_state == "FIRST_SPIN":
                         spinning = True
                         spin_speed = random.uniform(25, 40)  # Random initial speed
-                    else:
-                        result_text = "You need to place a bet first!"
+                    elif game_state == "SECOND_SPIN":
+                        spinning = True
+                        spin_speed = random.uniform(25, 40)  # Random initial speed
 
             elif event.type == pygame.MOUSEBUTTONDOWN and not spinning:
-                # Check if bet buttons are clicked
-                if not has_bet:
-                    # Higher button
-                    if WIDTH // 2 - 150 <= event.pos[0] <= WIDTH // 2 - 50 and HEIGHT - 120 <= event.pos[1] <= HEIGHT - 80:
+                if game_state == "CHOOSE_BET":
+                    # Decrease bet button
+                    decrease_btn = pygame.Rect(WIDTH // 2 - 180, HEIGHT - 100, 50, 40)
+                    if decrease_btn.collidepoint(event.pos) and bet_amount - 5 >= 5:
+                        bet_amount -= 5
+                    
+                    # Increase bet button
+                    increase_btn = pygame.Rect(WIDTH // 2 + 130, HEIGHT - 100, 50, 40)
+                    if increase_btn.collidepoint(event.pos) and bet_amount + 5 <= game_data.money:
+                        bet_amount += 5
+                    
+                    # Confirm bet button
+                    confirm_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 50, 200, 40)
+                    if confirm_btn.collidepoint(event.pos):
                         if bet_amount <= game_data.money:
-                            bet_choice = "HIGHER"
                             game_data.money -= bet_amount
-                            has_bet = True
+                            game_state = "FIRST_SPIN"
                         else:
                             result_text = "Not enough money!"
+                
+                elif game_state == "FIRST_SPIN":
+                    # Spin button
+                    spin_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 70, 200, 40)
+                    if spin_btn.collidepoint(event.pos):
+                        spinning = True
+                        spin_speed = random.uniform(25, 40)
+                
+                elif game_state == "CHOOSE_HIGHER_LOWER":
+                    # Higher button
+                    higher_btn = pygame.Rect(WIDTH // 2 - 220, HEIGHT - 70, 200, 40)
+                    if higher_btn.collidepoint(event.pos):
+                        bet_choice = "HIGHER"
+                        game_state = "SECOND_SPIN"
 
                     # Lower button
-                    elif WIDTH // 2 + 50 <= event.pos[0] <= WIDTH // 2 + 150 and HEIGHT - 120 <= event.pos[1] <= HEIGHT - 80:
-                        if bet_amount <= game_data.money:
-                            bet_choice = "LOWER"
-                            game_data.money -= bet_amount
-                            has_bet = True
-                        else:
-                            result_text = "Not enough money!"
+                    lower_btn = pygame.Rect(WIDTH // 2 + 20, HEIGHT - 70, 200, 40)
+                    if lower_btn.collidepoint(event.pos):
+                        bet_choice = "LOWER"
+                        game_state = "SECOND_SPIN"
+                
+                elif game_state == "SECOND_SPIN":
+                    # Spin button
+                    spin_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 70, 200, 40)
+                    if spin_btn.collidepoint(event.pos):
+                        spinning = True
+                        spin_speed = random.uniform(25, 40)
+                
+                elif game_state == "RESULT":
+                    # Play again button
+                    play_again_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 60, 200, 40)
+                    if play_again_btn.collidepoint(event.pos):
+                        # Reset for new game
+                        first_number = None
+                        second_number = None
+                        bet_choice = None
+                        result_text = ""
+                        game_state = "CHOOSE_BET"
 
         clock.tick(60)
