@@ -35,6 +35,7 @@ def roulette_game(SCREEN):
     chosen_color_index = 0
     bet_amount = 10
     result_text = ""
+    spin_text = "Press space to spin"
 
     spinning = False
     angle = 0
@@ -90,8 +91,17 @@ def roulette_game(SCREEN):
         pygame.draw.rect(SCREEN, BLACK, result_rect)  # Black background
 
         # Display Result on top of the black rectangle
-        result_display = font.render(result_text, True, GREEN if "won" in result_text else RED)
-        SCREEN.blit(result_display, (WIDTH // 2 - 165, HEIGHT - 110))
+        if spinning:
+          spin_text = ""
+        else:
+          spin_text = "Press space to spin"
+
+        if result_text:
+          result_display = font.render(result_text, True, GREEN if "won" in result_text else RED)
+          SCREEN.blit(result_display, (WIDTH // 2 - 165, HEIGHT - 110))
+        else:
+          spin_text_display = font.render(spin_text, True, WHITE)
+          SCREEN.blit(spin_text_display, (WIDTH // 2 - 165, HEIGHT - 110))
 
         # Draw Exit Button in the top-right corner (Red button)
         exit_button = pygame.Rect(WIDTH - 150, 20, 120, 40)  # Position (top-right corner)
@@ -128,6 +138,7 @@ def roulette_game(SCREEN):
                         game_data.money -= bet_amount
                         spinning = True
                         spin_speed = 30
+                        result_text = ""
 
             # Handle Mouse Clicks
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -135,3 +146,5 @@ def roulette_game(SCREEN):
                 if exit_button.collidepoint(mouse_pos):
                     game_data.save_money(game_data.money)
                     return  # Exit to main menu
+                elif not spinning and result_text: #if the player clicks anywhere when a result is shown, reset.
+                    result_text = ""
