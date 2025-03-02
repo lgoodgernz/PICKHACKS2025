@@ -86,6 +86,50 @@ def draw_main_menu():
     SCREEN.blit(get_money_pressed if clicked else get_money_original, get_money_rect.topleft)
     SCREEN.blit(help_pressed if clicked else help_original, help_rect.topleft)
     SCREEN.blit(exit_pressed if clicked else exit_original, exit_rect.topleft)
+
+    # Load additional images
+    # Playing_card
+    playing_card_img = pygame.image.load("Playing_card.png")
+    playing_card_img = pygame.transform.scale(playing_card_img, (64, 54))
+    playing_card_rect = playing_card_img.get_rect(topleft=(311, 79))
+    SCREEN.blit(playing_card_img, playing_card_rect.topleft)
+
+    # Carpet (Updated position and dimensions)
+    carpet_img = pygame.image.load("carpet.png")
+    carpet_img = pygame.transform.scale(carpet_img, (192, 133))  # Updated dimensions
+    carpet_rect = carpet_img.get_rect(topleft=(990, 353))  # Updated position
+    SCREEN.blit(carpet_img, carpet_rect.topleft)
+
+    # Spinning Wheel
+    spinning_wheel_img = pygame.image.load("Spinning_Wheel.png")
+    spinning_wheel_img = pygame.transform.scale(spinning_wheel_img, (41, 41))  # Dimensions rounded
+    spinning_wheel_rect = spinning_wheel_img.get_rect(topleft=(230, 420))
+    SCREEN.blit(spinning_wheel_img, spinning_wheel_rect.topleft)
+
+    # Pink girl (Updated to Pink_girl_two.png)
+    pink_girl_two_img = pygame.image.load("Pink_girl_two.png")
+    pink_girl_two_img = pygame.transform.scale(pink_girl_two_img, (52, 80))
+    pink_girl_two_rect = pink_girl_two_img.get_rect(topleft=(1120, 434))
+    SCREEN.blit(pink_girl_two_img, pink_girl_two_rect.topleft)
+
+    # New Pink_girl image
+    pink_girl_img = pygame.image.load("Pink_girl.png")
+    pink_girl_img = pygame.transform.scale(pink_girl_img, (54, 84))  # Set dimensions
+    pink_girl_rect = pink_girl_img.get_rect(topleft=(316, 115))  # Set position
+    SCREEN.blit(pink_girl_img, pink_girl_rect.topleft)
+
+    # Basketball
+    basketball_img = pygame.image.load("Basketball.png")
+    basketball_img = pygame.transform.scale(basketball_img, (41, 41))
+    basketball_rect = basketball_img.get_rect(topleft=(1112, 112))
+    SCREEN.blit(basketball_img, basketball_rect.topleft)
+
+    # Roulette table
+    roulette_table_img = pygame.image.load("roulette_table.png")
+    roulette_table_img = pygame.transform.scale(roulette_table_img, (210, 210))
+    roulette_table_rect = roulette_table_img.get_rect(topleft=(1039, 304))
+    SCREEN.blit(roulette_table_img, roulette_table_rect.topleft)
+
     pygame.display.update()
 
 def main():
@@ -117,7 +161,6 @@ def main():
         elif current_game == "blackjack":
             blackjack_game(SCREEN)
             current_game = None
-    
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
