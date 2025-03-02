@@ -87,7 +87,7 @@ def nba_game(SCREEN):
                 if event.key == pygame.K_ESCAPE:
                     game_data.save_money(game_data.money)
                     return
-                elif event.key == pygame.K_SPACE and bet_amount < game_data.money:
+                elif event.key == pygame.K_SPACE and bet_amount <= game_data.money:
                     if bet_amount > game_data.money and game_data.money > 0:
                         result_text = "Not enough money!"
                         bet_amount = 5
