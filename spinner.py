@@ -443,8 +443,8 @@ def spinner_game(SCREEN):
                         bet_amount += 5
                     
                     # Confirm bet button
-                    confirm_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 50, 200, 40)
-                    if confirm_btn.collidepoint(event.pos):
+                    confirm_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 100, 200, 40)
+                    if confirm_btn.collidepoint(event.pos) or pygame.K_SPACE:
                         if bet_amount <= game_data.money:
                             game_data.money -= bet_amount
                             game_state = "FIRST_SPIN"
@@ -474,19 +474,28 @@ def spinner_game(SCREEN):
                 elif game_state == "SECOND_SPIN":
                     # Spin button
                     spin_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 70, 200, 40)
-                    if spin_btn.collidepoint(event.pos):
+                    if spin_btn.collidepoint(event.pos) or (pygame.K_SPACE and pygame.KEYDOWN):
                         spinning = True
                         spin_speed = random.uniform(25, 40)
                 
                 elif game_state == "RESULT":
-                    # Play again button
-                    play_again_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 60, 200, 40)
-                    if play_again_btn.collidepoint(event.pos):
-                        # Reset for new game
-                        first_number = None
-                        second_number = None
-                        bet_choice = None
-                        result_text = ""
-                        game_state = "CHOOSE_BET"
+                    for event in pygame.event.get():
+                        # Play again button
+                        play_again_btn = pygame.Rect(WIDTH // 2 - 100, HEIGHT - 60, 200, 40)
+                        if play_again_btn.collidepoint(event.pos):
+                            # Reset for new game
+                            first_number = None
+                            second_number = None
+                            bet_choice = None
+                            result_text = ""
+                            game_state = "CHOOSE_BET"
+                        elif event.type == pygame.KEYDOWN:
+                            if event.type == pygame.KEYDOWN:
+                                first_number = None
+                                second_number = None
+                                bet_choice = None
+                                result_text = ""
+                                game_state = "CHOOSE_BET"
+
 
         clock.tick(60)
